@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Report Card</title>
+<style>
+  body {
+    font-family: Poppins, sans-serif;
+    background: #f1f3f6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  form, .report-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    width: 90%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+  }
+  input, select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+  }
+  button {
+    margin-top: 15px;
+    background: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 8px;
+  }
+  th {
+    background: #007bff;
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<h1>Student Report Card</h1>
+
+<form id="reportForm">
+  <label>Class:
+    <select id="studentClass" required>
+      <option value="">Select Class</option>
+      <option value="Class 6">Class 6</option>
+      <option value="Class 7">Class 7</option>
+      <option value="Class 8">Class 8</option>
+      <option value="Class 9">Class 9</option>
+      <option value="Class 10">Class 10</option>
+      <option value="Class 11">Class 11</option>
+      <option value="Class 12">Class 12</option>
+    </select>
+  </label>
+
+  <label>Student Name:
+    <input type="text" id="studentName" required>
+  </label>
+
+  <label>English: <input type="number" id="english" min="0" max="100" required></label>
+  <label>Maths: <input type="number" id="maths" min="0" max="100" required></label>
+  <label>Science: <input type="number" id="science" min="0" max="100" required></label>
+  <label>Hindi: <input type="number" id="hindi" min="0" max="100" required></label>
+  <label>Social Science: <input type="number" id="sst" min="0" max="100" required></label>
+  <label>French/German: <input type="number" id="foreign" min="0" max="100" required></label>
+
+  <button type="submit">Save Report</button>
+</form>
+
+<div class="report-container">
+  <h2>View Reports by Class</h2>
+  <select id="viewClass">
+    <option value="">Select Class</option>
+    <option value="Class 6">Class 6</option>
+    <option value="Class 7">Class 7</option>
+    <option value="Class 8">Class 8</option>
+    <option value="Class 9">Class 9</option>
+    <option value="Class 10">Class 10</option>
+    <option value="Class 11">Class 11</option>
+    <option value="Class 12">Class 12</option>
+  </select>
+  <button onclick="showReports()">Show</button>
+
+  <div id="reportDisplay"></div>
+</div>
+
+<script>
+const form = document.getElementById('reportForm');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const studentClass = document.getElementById('studentClass').value;
+  const studentName = document.getElementById('studentName').value.trim();
+  const subjects = {
+    English: document.getElementById('english').value,
+    Maths: document.getElementById('maths').value,
+    Science: document.getElementById('science').value,
+    Hindi: document.getElementById('hindi').value,
+    "Social Science": document.getElementById('sst').value,
+    "French/German": document.getElementById('foreign').value,
+  };
+
+  const studentData = { name: studentName, ...subjects };
+
+  let records = JSON.parse(localStorage.getItem(studentClass)) || [];
+  records.push(studentData);
+  localStorage.setItem(studentClass, JSON.stringify(records));
+
+  alert('Report saved successfully!');
+  form.reset();
+});
+
+function showReports() {
+  const selectedClass = document.getElementById('viewClass').value;
+  const reportDisplay = document.getElementById('reportDisplay');
+  const records = JSON.parse(localStorage.getItem(selectedClass)) || [];
+
+  if (records.length === 0) {
+    reportDisplay.innerHTML = `<p>No records found for ${selectedClass || 'this class'}.</p>`;
+    return;
+  }
+
+  let table = `
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>English</th>
+      <th>Maths</th>
+      <th>Science</th>
+      <th>Hindi</th>
+      <th>Social Science</th>
+      <th>French/German</th>
+    </tr>`;
+
+  records.forEach(r => {
+    table += `
+    <tr>
+      <td>${r.name}</td>
+      <td>${r.English}</td>
+      <td>${r.Maths}</td>
+      <td>${r.Science}</td>
+      <td>${r.Hindi}</td>
+      <td>${r["Social Science"]}</td>
+      <td>${r["French/German"]}</td>
+    </tr>`;
+  });
+  table += `</table>`;
+  reportDisplay.innerHTML = table;
+}
+</script>
+
+</body>
+</html>
